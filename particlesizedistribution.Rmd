@@ -1,0 +1,251 @@
+---
+title: "Assignment 2 Dispersed Multiphase Flow (ME5310)"
+author: "Shahil Chaudhari(ME21M038)"
+output:
+html_document: default
+pdf_document: default
+---
+
+```{r setup, include=FALSE}
+df = read.delim('/home/arnie/Documents/IITM/sem2/Dispersed Multiphaseflow(ME5310)/assignment 2/Particle size distribution.txt')
+df2 = read.csv("/home/arnie/Documents/IITM/sem2/Dispersed Multiphaseflow(ME5310)/assignment 2/bin2.csv")
+df10 = read.csv("/home/arnie/Documents/IITM/sem2/Dispersed Multiphaseflow(ME5310)/assignment 2/bin10.csv")
+df20 = read.csv("/home/arnie/Documents/IITM/sem2/Dispersed Multiphaseflow(ME5310)/assignment 2/bin20.csv")
+df30= read.csv("/home/arnie/Documents/IITM/sem2/Dispersed Multiphaseflow(ME5310)/assignment 2/bin30.csv")
+library(ggplot2)
+library(stringr)
+library(base)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Que1: Plot the number histogram of particle size distribution for 2, 10, 20 and 30 number of bins.
+
+```{r df,echo=FALSE}
+options(warn=-1)
+ggplot(df,aes(Particle.size.in.micron))+geom_histogram(bins=2,colour = 'black',fill=I("darkgrey"))+ggtitle("Number of bins 2")+labs(x="Particle size in micron",y="Frequency")+geom_freqpoly(position = "stack")
+
+ggplot(df,aes(Particle.size.in.micron))+geom_histogram(bins=10,colour = 'black',fill=I("darkgrey"))+ggtitle("Number of bins 10")+labs(x="Particle size in micron",y="Frequency")+geom_freqpoly(position = "stack")
+
+ggplot(df,aes(Particle.size.in.micron))+geom_histogram(bins=20,colour = 'black',fill=I("darkgrey"))+ggtitle("Number of bins 20")+labs(x="Particle size in micron",y="Frequency")+geom_freqpoly(position = "stack")
+
+ggplot(df,aes(Particle.size.in.micron))+geom_histogram(bins=30,colour = 'black',fill=I("darkgrey"))+ggtitle("Number of bins 30")+labs(x="Particle size in micron",y="Frequency")+geom_freqpoly(position = "stack")
+```
+
+
+## Que 2: Plot the number probability distribution for the above cases. Mention your observation on the effect of increasing the number of bins.
+
+##### Ans:-
+
+##### All of the graphs are skewed to left side
+##### From Graphs we can see that as bin size increases distribution becomes clear. Probability distribution is linear when Bin size is 2. When bin size is 10 we cannot see the sudden increase in frequency from 19.9 micron to 25 micron size because high frequency dominates over low frequency. 
+##### Though high bin size is better but it will create problem when compared with standard distribution for analysis. It is important to choose appropriate bin size.
+
+
+```{r df2,echo=FALSE}
+ggplot(df2,aes(x=df2$di,y=df2$numberprob))+geom_line(size=1)+ggtitle("Probability Distribtion for Bin size = 2")+labs(x="Particle size in micron",y="Number Probability")
+```
+
+```{r df10,echo=FALSE}
+ggplot(df10,aes(x=df10$di,y=df10$numberprob))+geom_line(size=1)+ggtitle("Probability Distribtion for Bin size = 10")+labs(x="Particle size in micron",y="Number Probability")
+```
+
+
+```{r df20,echo=FALSE}
+ggplot(df20,aes(x=df20$di,y=df20$numberprob))+geom_line(size=1)+ggtitle("Probability Distribtion for Bin size = 20")+labs(x="Particle size in micron",y="Number Probability")
+```
+
+
+```{r df30,echo=FALSE}
+ggplot(df30,aes(x=df30$di,y=df30$numberprob))+geom_line(size=1)+ggtitle("Probability Distribtion for Bin size = 30")+labs(x="Particle size in micron",y="Number Probability")
+```
+
+## Que 3: If particle sizing accuracy is 3 microns, select a bin size that you would prefer to represent the particle size distribution.
+
+##### Ans:-
+
+#### Bin size ------> Range of Diameter 
+#####  2     -------> 40 micron
+##### 10    -------> 8 micron
+#####  20    -------> 4 micron
+##### 30    -------> 2 micron
+
+##### For bins size above 20  diameter range is below 4 micron so it is not advisable for accuracy perspective (3 micron) because it is possible that particle may be in adjacent bin but due to measurement accuracy particle is counted in that particular bin. I plotted Rossin-Rammler distribution for every bin size and found that log-log curve is more linear below bin size = 20. For other bin size the curve is polynomial so I choose this bin size for further calculation
+
+## I) (a) cumulative number probability distribution (b) cumulative mass probability distribution
+##### Ans: - 
+
+
+```{r ,echo=FALSE}
+ggplot(df20,aes(x=df20$di,y=df20$numberprob_cum))+geom_smooth(size=1,se=FALSE,colour="black")+ggtitle("Cummulative Number Probability Distribtion for Bin size = 20")+labs(x="Particle size in micron",y="Cummulative Number Probability")
+```
+
+
+```{r ,echo=FALSE}
+ggplot(df20,aes(x=df20$di,y=df20$massprob_cum))+geom_smooth(size=1,se=FALSE,colour="black")+ggtitle("Cumulative Mass Probability Distribtion for Bin size = 20")+labs(x="Particle size in micron",y="Cummulative Mass Probability")
+median =0
+mode = 0
+for(i in 1:length(df20$Freq)){
+  if(df20$Freq_cum[i]>=sum(df20$Freq)/2){
+      median = df20$ldi[i] +(sum(df20$Freq)/2-df20$Freq_cum[i-1])/df20$Freq[i]*(df20$udi[i]-df20$ldi[i])
+      mode =  df20$ldi[i] +(df20$Freq[i]-df20$Freq[i-1])/(2*df20$Freq[i]-df20$Freq[i+1]-df20$Freq[i-1])*(df20$udi[i]-df20$ldi[i])
+      break
+  }
+}
+```
+
+## II)Find the Mode and Median
+##### Ans:-
+
+#### Median  : `r median` micron
+#### Mode    : `r mode` micron
+
+## III) Find (a) AMD, (b) SMD, (c) VMD, and (c) Variance of the particle size distribution.
+##### Ans:-
+```{r, echo=FALSE}
+sigma_ni = sum(df20$Freq)
+sigma_di2_ni = sum(df20$di^2*df20$Freq)
+sigma_di3_ni = sum(df20$di^3*df20$Freq)
+AMD = sum(df10$Freq * df20$di)/sigma_ni
+sigma_xbar_xi = sum((df20$di-AMD)**2)
+```
+
+#### Arithmatic Mean Diameter = `r sum(df20$Freq * df20$di)/sigma_ni` micron
+#### Surface Mean Diameter =  `r (sigma_di2_ni/sigma_ni)**(0.5)` micron
+####  Volume mean Diameter = `r ( sigma_di3_ni/sigma_ni)**(1/3)` micron
+####  Variance = `r sigma_xbar_xi/sigma_ni` 
+
+## IV) Find the shape and scale parameters of a Rossin-Rammler distribution that can represent the above size distribution.
+##### Ans:-
+##### While ploting Rossin-Rammler Distribution log-log curve I removed last bin because of range (96 to 100) because at that bin log(-log(1-F(d))) value(cummulative probability =1) is infinite so I took only 19 points to fit curve.
+##### To get values of dnm(Median Number diameter) and dmm(Median mass diameter) I use interpolation
+
+```{r,echo=FALSE}
+df4 = subset(df20,select=c(di,numberprob_cum,massprob_cum))
+df4$rosinrammler_num = log(-log(1-df4$numberprob_cum))
+df4$rosinrammler_mass = log(-log(1-df4$massprob_cum))
+df4$ln_di = log(df4$di)
+df4 = df4[-length(df4$di),]
+
+
+ggplot(df4,aes(x=ln_di,y=rosinrammler_num))+geom_point(col="black",size=2.5,pch=19,show.legend = TRUE)+geom_smooth(method = lm,se=FALSE,size=1,col='red',linetype='dashed',show.legend = TRUE,formula = y~x)+ggtitle("Rossin-Rammler Distribution for Cummulative Number probability")+labs(x="ln(D)",y="ln(-ln(1-F(D)))") 
+
+regline = lm(df4$rosinrammler_num~df4$ln_di,df4)
+dnm=29.5703910614525
+eta = coef(regline)[2]
+```
+
+####               ** ln(-ln(1-F(D))) = `r coef(regline)[2]`* ln(D) `r coef(regline)[1]` **
+##### Mass Mean Diameter (dmm) = `r dnm`
+##### Shape Parameter(η) = `r coef(regline)[2]`
+##### Scale Parameter(δ) = `r dnm/(log(2))^(1/eta)`
+
+```{r, echo=FALSE}
+ggplot(df4,aes(x=ln_di,y=rosinrammler_mass))+geom_point(col="black",size=2.5,pch=19,show.legend = TRUE)+geom_smooth(method = lm,se=FALSE,size=1,col='red',linetype='dashed',show.legend = TRUE,formula = y~x)+ggtitle("Rossin-Rammler Distribution for Cummulative Mass probability")+labs(x="ln(D)",y="ln(-ln(1-F(D)))") 
+
+regline = lm(df4$rosinrammler_mass~df4$ln_di,df4)
+
+dmm = 54.1941277891178
+eta = coef(regline)[2]
+```
+
+####               ** ln(-ln(1-F(D))) =  `r coef(regline)[2]`* ln(D)  `r coef(regline)[1]` **
+##### Mass Mean Diameter (dmm) = `r dmm`
+##### Shape Parameter(η) = `r coef(regline)[2]`
+##### Scale Parameter(δ) = `r dmm/(log(2))^(1/eta)`
+
+
+## Que 4: The minimum and maximum particle size in a one-dimensional transport of water droplets in air flow are 10 microns and 100 microns, respectively, when considered within a given sample volume (1 m3). The particle number density function and particle velocity distribution are assumed to be linear as depicted in Fig 
+```{r, echo=FALSE}
+dropsize = seq(10,100,by=1)
+numberdensity = seq()
+particlevelocity =seq()
+# sample volume 1 m^3
+samplevolume = 1
+
+# obtaining particle density distribution and velocity distribution
+# dropsize(micrometer)
+# velocity (m/s)
+
+for(i in 1:length(dropsize)){
+  numberdensity[i]=(-1110)*dropsize[i]+111100
+  particlevelocity[i]=0.1*dropsize[i]
+}
+
+par(mfrow=c(1,2))
+plt1= plot(x=dropsize,y=numberdensity,type='l',lwd=3,main="Particle Number Density vs Particle size",xlab = "diameter (micron)",ylab = "n(D)");mtext("n(D) = 111100 - 1110 * D")
+plt2 =plot(x=dropsize,y=particlevelocity,type='l',lwd=3,main="Particle Velocity vs Particle size",xlab = "diameter (micron)",ylab = "V(D)"); mtext("V(D) = 0.1 * D")
+
+```
+
+## (a) number density of all particles, (b) particle volume fraction (c) particle bulk density (d) particle mass flux in the flow direction
+\
+
+#### D1 = 10 micron 
+#### D2 = 100 micron    
+
+$\Delta V =  1 \;  m^ {3}$ \
+$N(D) = -1110\;D + 111100$  $\;\;\;\;V(D)= 0.1 \;D$
+
+\
+
+#### (a) Number density of all particles
+
+$\Delta n = \int_{D1}^{D2} n(D) \; dD$ \
+
+$\ = \int_{10}^{100} -1110D + 111100 \; dD$ \
+
+$\ =(\left. -1110\;\frac{D^{2}}{2} +111100\;D\right)|_{10}^{100}$ \
+
+$\ = 4.464 * 10^{6} \;\;  Particles$ 
+
+$\ n = \frac{\Delta n}{\Delta V} = \frac{4.464 * 10^{6}}{1}$ \
+
+$\ Number Density \;(n)\;= \;4.464 * 10^{6} \;\frac{particles}{m^{3}}$
+
+\
+
+#### (b) Particle volume fraction
+
+$\ Particle \;volume\; fraction \; \alpha_{d} = \frac{\Delta V_{d}}{\Delta V}$ \
+
+$\Delta V_d= \int_{10}^{100} (-1110D + 111100)\;\frac{\pi \; D^{3}}{6} \; dD$ \
+
+$\ = \frac{\pi}{6}\int_{10}^{100} (-1110\;D^{4} + 111100\;D^{3}) \; dD$ \
+
+$\ = \frac{\pi}{6}\ (\left. -1110\;\frac{D^{5}}{5} +111100\;\frac{D^{4}}{4}\right)|_{10}^{100}$ \
+
+$\ = \frac{\pi}{6}\ (\left. -1110\;\frac{100^{5}-10^{5}}{5} +111100\;\frac{100^{4}-10^{4}}{4}\right)$\
+
+$\ = 2.891 * 10^{11} \;  mm^3 = 2.891 * 10^{-7} \;m^3$ \
+
+$\alpha_{d} = \frac{2.891 * 10^{-7}}{1} = 2.891 * 10^{-7}$ \
+
+\
+
+#### (c) Particle bulk density
+
+$\ Water Density \;(\;\rho_d\;) = 1000 \; \frac{kg}{m^3}$
+
+$\ Particle Bulk Density \; (\;\overline{\rho_d}\;) = \rho_{d} \; \alpha_{d}$ \
+
+$\ \overline{\rho_d} = 1000 * 2.891 * 10^{-7} = 2.891 * 10^{-4} \frac{kg}{m^3}$ \
+
+\
+
+#### (d) Particle Mass flux in flow direction
+
+$\ Mass \;flow\; rate \; (\dot{m}_{d}) = \int_{D1}^{D2} n(D) \;V(D) \; \rho_d \frac{\pi\;D^3}{6}\; dD$ \
+
+$\ = \int_{10}^{100} (-1110\;D + 111100)(0.1 \;D) \;1000\; \frac{\pi D^3}{6} dD$ \
+
+$\ = \frac{100 \;\pi}{6}\int_{10}^{100} (-1110\;\ D^5 + 111100\; D^4) \; dD$ \
+
+$\ = \frac{100\;\pi}{6}\ (\left. -1110\;\frac{D^{6}}{6} +111100\;\frac{D^{5}}{5}\right)|_{10}^{100}$ \
+
+$\ = \frac{100\;\pi}{6}\ (\left. -1110\;\frac{100^{6}-10^{6}}{6} +111100\;\frac{100^{5}-10^{5}}{5}\right)$\
+
+$\ = 1.9744 * 10^{15} \; \frac{mm^3}{sec} \; \frac{m^3}{kg} = 0.00194 \; \frac{kg}{sec}$ \
+
+$\ Mass flux (\dot{m}_d^{''}) = \frac{\dot{m}_{d}}{A} = \frac{0.00194}{1} = 7.012 \; \frac{kg}{hr}$ \
