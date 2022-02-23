@@ -248,4 +248,4 @@ $\ = \frac{100\;\pi}{6}\ (\left. -1110\;\frac{100^{6}-10^{6}}{6} +111100\;\frac{
 
 $\ = 1.9744 * 10^{15} \; \frac{mm^3}{sec} \; \frac{m^3}{kg} = 0.00194 \; \frac{kg}{sec}$ \
 
-$\ Mass flux (\dot{m}_d^{''}) = \frac{\dot{m}_{d}}{A} = \frac{0.00194}{1} = 7.012 \; \frac{kg}{hr}$ \
+$\ Mass flux (\dot{m}_d^{''}) = \frac{\dot{m}_{d}}{A} = \frac{0.00194}{1} = 7.012 \; \frac{kg}{hr\;m^{2}}$ \
